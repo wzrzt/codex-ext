@@ -1,0 +1,273 @@
+{
+  "name": "codex-workspace-sessions",
+  "displayName": "%displayName%",
+  "description": "%description%",
+  "version": "0.6.2",
+  "publisher": "my-test",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wzrzt/codex-ext.git"
+  },
+  "bugs": {
+    "url": "https://github.com/wzrzt/codex-ext/issues"
+  },
+  "homepage": "https://github.com/wzrzt/codex-ext#readme",
+  "engines": {
+    "vscode": "^1.96.2"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "codex",
+    "openai",
+    "workspace",
+    "sessions"
+  ],
+  "main": "./out/extension.js",
+  "activationEvents": [
+    "onStartupFinished",
+    "onView:codexWorkspaceSessions.controls",
+    "onCommand:codexWorkspaceSessions.focus",
+    "onCommand:codexWorkspaceSessions.toggleSessionScope",
+    "onCommand:codexWorkspaceSessions.searchSessions",
+    "onCommand:codexWorkspaceSessions.clearSearch",
+    "onCommand:codexWorkspaceSessions.refreshSessions",
+    "onCommand:codexWorkspaceSessions.newSession",
+    "onCommand:codexWorkspaceSessions.openSession",
+    "onCommand:codexWorkspaceSessions.renameSession",
+    "onCommand:codexWorkspaceSessions.archiveSession",
+    "onCommand:codexWorkspaceSessions.restoreArchivedSession",
+    "onCommand:codexWorkspaceSessions.createGroup",
+    "onCommand:codexWorkspaceSessions.moveToGroup",
+    "onCommand:codexWorkspaceSessions.renameGroup",
+    "onCommand:codexWorkspaceSessions.deleteGroup"
+  ],
+  "extensionDependencies": [
+    "openai.chatgpt"
+  ],
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "codexWorkspaceSessionsActivity",
+          "title": "%activitybar.title%",
+          "icon": "media/codex-blossom.svg"
+        }
+      ]
+    },
+    "views": {
+      "codexWorkspaceSessionsActivity": [
+        {
+          "id": "codexWorkspaceSessions.controls",
+          "name": "%controls.view.title%",
+          "type": "webview"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "codexWorkspaceSessions.focus",
+        "title": "%command.focus%",
+        "category": "%command.category%",
+        "icon": "$(layout-sidebar-left)"
+      },
+      {
+        "command": "codexWorkspaceSessions.toggleSessionScope",
+        "title": "%command.toggleScope%",
+        "category": "%command.category%",
+        "icon": "$(filter)"
+      },
+      {
+        "command": "codexWorkspaceSessions.showAllSessions",
+        "title": "%command.showAll%",
+        "category": "%command.category%",
+        "icon": "$(list-unordered)"
+      },
+      {
+        "command": "codexWorkspaceSessions.showWorkspaceSessions",
+        "title": "%command.showWorkspace%",
+        "category": "%command.category%",
+        "icon": "$(folder)"
+      },
+      {
+        "command": "codexWorkspaceSessions.searchSessions",
+        "title": "%command.search%",
+        "category": "%command.category%",
+        "icon": "$(search)"
+      },
+      {
+        "command": "codexWorkspaceSessions.clearSearch",
+        "title": "%command.clearSearch%",
+        "category": "%command.category%",
+        "icon": "$(clear-all)"
+      },
+      {
+        "command": "codexWorkspaceSessions.refreshSessions",
+        "title": "%command.refresh%",
+        "category": "%command.category%",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "codexWorkspaceSessions.newSession",
+        "title": "%command.newSession%",
+        "category": "%command.category%",
+        "icon": "$(add)"
+      },
+      {
+        "command": "codexWorkspaceSessions.openSession",
+        "title": "%command.open%",
+        "category": "%command.category%"
+      },
+      {
+        "command": "codexWorkspaceSessions.renameSession",
+        "title": "%command.rename%",
+        "category": "%command.category%",
+        "icon": "$(edit)"
+      },
+      {
+        "command": "codexWorkspaceSessions.archiveSession",
+        "title": "%command.archive%",
+        "category": "%command.category%",
+        "icon": "$(archive)"
+      },
+      {
+        "command": "codexWorkspaceSessions.restoreArchivedSession",
+        "title": "%command.restore%",
+        "category": "%command.category%",
+        "icon": "$(unarchive)"
+      },
+      {
+        "command": "codexWorkspaceSessions.createGroup",
+        "title": "%command.createGroup%",
+        "category": "%command.category%",
+        "icon": "$(new-folder)"
+      },
+      {
+        "command": "codexWorkspaceSessions.moveToGroup",
+        "title": "%command.moveToGroup%",
+        "category": "%command.category%",
+        "icon": "$(file-symlink-directory)"
+      },
+      {
+        "command": "codexWorkspaceSessions.renameGroup",
+        "title": "%command.renameGroup%",
+        "category": "%command.category%",
+        "icon": "$(edit)"
+      },
+      {
+        "command": "codexWorkspaceSessions.deleteGroup",
+        "title": "%command.deleteGroup%",
+        "category": "%command.category%",
+        "icon": "$(trash)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "codexWorkspaceSessions.showAllSessions",
+          "when": "view == codexWorkspaceSessions.activity && !codexWorkspaceSessions.showAll",
+          "group": "navigation@1"
+        },
+        {
+          "command": "codexWorkspaceSessions.showWorkspaceSessions",
+          "when": "view == codexWorkspaceSessions.activity && codexWorkspaceSessions.showAll",
+          "group": "navigation@1"
+        },
+        {
+          "command": "codexWorkspaceSessions.searchSessions",
+          "when": "view == codexWorkspaceSessions.activity",
+          "group": "navigation@2"
+        },
+        {
+          "command": "codexWorkspaceSessions.clearSearch",
+          "when": "view == codexWorkspaceSessions.activity && codexWorkspaceSessions.hasSearch",
+          "group": "navigation@3"
+        },
+        {
+          "command": "codexWorkspaceSessions.refreshSessions",
+          "when": "view == codexWorkspaceSessions.activity",
+          "group": "navigation@4"
+        },
+        {
+          "command": "codexWorkspaceSessions.createGroup",
+          "when": "view == codexWorkspaceSessions.activity",
+          "group": "navigation@5"
+        },
+        {
+          "command": "codexWorkspaceSessions.newSession",
+          "when": "view == codexWorkspaceSessions.activity",
+          "group": "navigation@0"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "codexWorkspaceSessions.openSession",
+          "when": "false"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "codexWorkspaceSessions.renameSession",
+          "when": "view == codexWorkspaceSessions.activity && viewItem == codexWorkspaceSessions.session",
+          "group": "inline@1"
+        },
+        {
+          "command": "codexWorkspaceSessions.archiveSession",
+          "when": "view == codexWorkspaceSessions.activity && viewItem == codexWorkspaceSessions.session",
+          "group": "inline@2"
+        },
+        {
+          "command": "codexWorkspaceSessions.moveToGroup",
+          "when": "view == codexWorkspaceSessions.activity && viewItem == codexWorkspaceSessions.session",
+          "group": "inline@3"
+        },
+        {
+          "command": "codexWorkspaceSessions.restoreArchivedSession",
+          "when": "view == codexWorkspaceSessions.activity && viewItem == codexWorkspaceSessions.archivedSession",
+          "group": "inline@1"
+        },
+        {
+          "command": "codexWorkspaceSessions.renameGroup",
+          "when": "view == codexWorkspaceSessions.activity && viewItem == codexWorkspaceSessions.customGroup",
+          "group": "inline@1"
+        },
+        {
+          "command": "codexWorkspaceSessions.deleteGroup",
+          "when": "view == codexWorkspaceSessions.activity && viewItem == codexWorkspaceSessions.customGroup",
+          "group": "inline@2"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "%configuration.title%",
+      "properties": {
+        "codexWorkspaceSessions.showAllSessions": {
+          "type": "boolean",
+          "default": false,
+          "scope": "window",
+          "description": "%configuration.showAll.description%"
+        },
+        "codexWorkspaceSessions.codexHome": {
+          "type": "string",
+          "default": "",
+          "scope": "window",
+          "description": "%configuration.codexHome.description%"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "vscode:prepublish": "npm run compile",
+    "package": "vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/vscode": "^1.96.0",
+    "@vscode/vsce": "^3.2.1",
+    "typescript": "^5.7.2"
+  }
+}

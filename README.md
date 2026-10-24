@@ -1,0 +1,115 @@
+# Codex Ext
+
+`Codex Ext` is an independent VS Code extension for managing local OpenAI
+Codex sessions. It adds a **Codex Ext** icon to VS Code's left Activity Bar
+and lets you view sessions belonging to the current workspace or every
+available local session.
+
+[中文说明](#中文说明) · [Report an issue](https://github.com/wzrzt/codex-ext/issues)
+
+## Requirements
+
+- VS Code 1.96 or newer
+- [OpenAI Codex](https://marketplace.visualstudio.com/items?itemName=openai.chatgpt)
+  (`openai.chatgpt`)
+
+The extension opens sessions in the leftmost existing editor group through the
+official Codex conversation editor.
+
+It reads Codex Desktop's local thread state to retain the same user-facing
+titles, workspace associations, and archive state as Codex. If that state is
+unavailable, it falls back to `session_index.jsonl`. Rename, archive, and
+restore use the app-server bundled with the official Codex extension; this
+keeps changes consistent with Codex without directly editing its local state.
+
+The single, continuous sidebar follows the compact Claude Code layout. Its
+**Account & Usage** section shows
+the signed-in email, plan, one progress bar per available Codex allowance
+window, and its reset time. The **Session Manager** panel below has a tab-style
+**Workspace / All sessions** switch, a search field, and a new-session action.
+The session list follows directly below it and retains groups, archive, and restore. Account usage is not a conversation token estimate.
+
+## Usage
+
+1. Install and enable the official OpenAI Codex extension.
+2. Open a folder or multi-root workspace.
+3. Click the **Codex Ext** icon in VS Code's left Activity Bar.
+4. Use the **Workspace / All sessions** tabs to choose the scope. It applies
+   to both active and archived sessions. Type in the search field to filter
+   titles in the selected scope.
+5. Active sessions are organized into **Ungrouped** and user-defined groups.
+   Drag a session to a group to move it; drag it to **Archived** to archive it.
+   Drag an archived session back to an active group to restore and move it.
+   Group data is stored per VS Code workspace.
+6. The **Archived** group follows the same scope filter. Clicking an archived
+   row, or its restore action, restores that exact session to the active list.
+   Rename, archive, and restore update the actual Codex conversation.
+7. Existing sessions are matched to their original workspace from Codex's local
+   session metadata. Opening a session also binds it to the current workspace
+   automatically, covering sessions whose metadata is unavailable.
+8. Use the search field to filter titles. Click a session to open it in a
+   Codex editor tab.
+
+The extension follows VS Code's display language. English is the default and
+Simplified Chinese is provided when VS Code uses `zh-cn`.
+
+Bindings are held in VS Code `workspaceState`; each workspace keeps an
+independent `sessionId → workspaceHash` mapping. Workspace identifiers are
+SHA-256 hashes rather than raw paths.
+
+## Privacy and data handling
+
+- Session titles, local workspace metadata, and archive state are read from
+  the local Codex state on your computer; they are not sent to a Codex Ext
+  service.
+- Account and allowance data are requested from the official Codex extension's
+  local app-server only.
+- Session grouping and workspace bindings are stored in VS Code
+  `workspaceState` for the current workspace.
+
+## 中文说明
+
+Codex Ext 是一个独立的 VS Code 扩展，用来管理本机的 OpenAI Codex 会话。
+
+- 按当前工作区或全部本地会话筛选；已归档会话也遵循该范围。
+- 显示官方 Codex 本地 app-server 返回的账户、套餐与可用额度。
+- 支持搜索、新建会话、新建分组、重命名、归档、恢复，以及拖拽到分组或
+  Archived。
+- 会话标题、工作区信息与归档状态只从本机 Codex 数据中读取；扩展不提供或
+  使用远端数据服务。
+
+## Development and packaging
+
+```bash
+cd /path/to/codex-workspace-sessions
+npm install
+npm run compile
+```
+
+Press `F5` in VS Code to launch an **Extension Development Host**, then use
+the left Activity Bar icon to test the view and commands.
+
+Create a Marketplace-ready VSIX:
+
+```bash
+npm run package
+```
+
+This writes `codex-workspace-sessions-0.6.2.vsix`. Install it locally with
+either of these options:
+
+```bash
+code --install-extension codex-workspace-sessions-0.6.2.vsix
+```
+
+Or use VS Code’s **Extensions: Install from VSIX...** command.
+
+## Acknowledgements
+
+This is an independent extension. It does not copy or modify
+`codex-companion`. Earlier design work was informed by
+[ramusuco/codex-companion](https://github.com/ramusuco/codex-companion);
+thanks to its original author.
+
+Codex and the blossom mark are trademarks of OpenAI. This independent plugin
+is not affiliated with or endorsed by OpenAI.
