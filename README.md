@@ -7,6 +7,20 @@ available local session.
 
 [中文说明](#中文说明) · [Report an issue](https://github.com/wzrzt/codex-ext/issues)
 
+## Install
+
+1. In VS Code, open the Extensions view (`⇧⌘X` on macOS).
+2. Search for **Codex Ext** and install the extension published by **wzrzt**.
+3. Install and enable the official **OpenAI Codex** extension.
+4. Reload VS Code if prompted, then choose the **Codex Ext** icon in the left
+   Activity Bar.
+
+You can also install it from a terminal:
+
+```bash
+code --install-extension wzrzt.codex-ext
+```
+
 ## Requirements
 
 - VS Code 1.96 or newer
@@ -71,38 +85,25 @@ SHA-256 hashes rather than raw paths.
 
 Codex Ext 是一个独立的 VS Code 扩展，用来管理本机的 OpenAI Codex 会话。
 
+### 安装
+
+1. 在 VS Code 打开扩展面板（macOS：`⇧⌘X`）。
+2. 搜索 **Codex Ext**，安装发布者为 **wzrzt** 的扩展。
+3. 安装并启用官方 **OpenAI Codex** 扩展。
+4. 根据提示重载 VS Code，然后点击左侧活动栏的 **Codex Ext** 图标。
+
+也可以在终端执行：
+
+```bash
+code --install-extension wzrzt.codex-ext
+```
+
 - 按当前工作区或全部本地会话筛选；已归档会话也遵循该范围。
 - 显示官方 Codex 本地 app-server 返回的账户、套餐与可用额度。
 - 支持搜索、新建会话、新建分组、重命名、归档、恢复，以及拖拽到分组或
   Archived。
 - 会话标题、工作区信息与归档状态只从本机 Codex 数据中读取；扩展不提供或
   使用远端数据服务。
-
-## Development and packaging
-
-```bash
-cd /path/to/codex-workspace-sessions
-npm install
-npm run compile
-```
-
-Press `F5` in VS Code to launch an **Extension Development Host**, then use
-the left Activity Bar icon to test the view and commands.
-
-Create a Marketplace-ready VSIX:
-
-```bash
-npm run package
-```
-
-This writes `codex-workspace-sessions-0.6.2.vsix`. Install it locally with
-either of these options:
-
-```bash
-code --install-extension codex-workspace-sessions-0.6.2.vsix
-```
-
-Or use VS Code’s **Extensions: Install from VSIX...** command.
 
 ## Acknowledgements
 
@@ -113,3 +114,6 @@ thanks to its original author.
 
 Codex and the blossom mark are trademarks of OpenAI. This independent plugin
 is not affiliated with or endorsed by OpenAI.
+
+Development and contribution guidance is available in
+[CONTRIBUTING.md](https://github.com/wzrzt/codex-ext/blob/main/CONTRIBUTING.md).
