@@ -40,7 +40,11 @@ export function activate(context: vscode.ExtensionContext): void {
   };
   const renameSession = async (sessionId: string): Promise<void> => {
     const session = sessionFor(sessionId);
-    if (session) { await sessions.renameSession(session); await refresh(); }
+    if (!session || !await sessions.renameSession(session)) {
+      return;
+    }
+    await refresh();
+    await sessions.refreshOpenSessionTitle(session.sessionId);
   };
   const archiveSession = async (sessionId: string): Promise<void> => {
     const session = sessionFor(sessionId);

@@ -2,6 +2,11 @@
 
 All notable changes to this project are documented in this file.
 
+## 0.6.5 — 2026-10-25
+
+- After a rename made in Codex Ext, reopen the matching official Codex editor
+  so its native VS Code tab refreshes to the new title.
+
 ## 0.6.4 — 2026-10-25
 
 - Fixed **New session** so every click opens a distinct official Codex
