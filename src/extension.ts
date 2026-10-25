@@ -107,15 +107,34 @@ export function activate(context: vscode.ExtensionContext): void {
     }
   };
 
+  /**
+   * Webview messages have no caller awaiting their promise.  Surface failures
+   * here so a missing/starting official Codex extension never appears as a
+   * non-responsive control.
+   */
+  const runAction = (action: SessionManagerAction): void => {
+    void handleAction(action).catch((error: unknown) => {
+      const detail = error instanceof Error ? error.message : String(error);
+      void vscode.window.showErrorMessage(vscode.l10n.t('Codex Ext: {0}', detail));
+    });
+  };
+
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider('codexWorkspaceSessions.controls', manager),
-    manager.onDidRequestAction((action) => { void handleAction(action); }),
+    manager.onDidRequestAction(runAction),
     vscode.commands.registerCommand('codexWorkspaceSessions.focus', () => vscode.commands.executeCommand('codexWorkspaceSessions.controls.focus')),
     vscode.commands.registerCommand('codexWorkspaceSessions.toggleSessionScope', () => setShowAll(!getShowAll())),
     vscode.commands.registerCommand('codexWorkspaceSessions.showAllSessions', () => setShowAll(true)),
     vscode.commands.registerCommand('codexWorkspaceSessions.showWorkspaceSessions', () => setShowAll(false)),
     vscode.commands.registerCommand('codexWorkspaceSessions.refreshSessions', refresh),
-    vscode.commands.registerCommand('codexWorkspaceSessions.newSession', () => sessions.createSession()),
+    vscode.commands.registerCommand('codexWorkspaceSessions.newSession', async () => {
+      try {
+        await sessions.createSession();
+      } catch (error) {
+        const detail = error instanceof Error ? error.message : String(error);
+        void vscode.window.showErrorMessage(vscode.l10n.t('Codex Ext: {0}', detail));
+      }
+    }),
     vscode.commands.registerCommand('codexWorkspaceSessions.searchSessions', async () => {
       const value = await vscode.window.showInputBox({ title: vscode.l10n.t('Search Codex Ext'), prompt: vscode.l10n.t('Filter session titles. Leave empty to clear the filter.'), value: manager.getQuery() });
       if (value !== undefined) { manager.setQuery(value); await updateContexts(); }
