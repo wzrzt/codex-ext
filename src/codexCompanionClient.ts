@@ -25,24 +25,6 @@ export class CodexSessionClient {
     await this.openInFirstEditorGroup(session.sessionId);
   }
 
-  /**
-   * Reopen an official Codex editor after Codex Ext changes its title. The
-   * official custom editor derives its native tab label only when resolved.
-   */
-  public async refreshOpenSessionTitle(sessionId: string): Promise<void> {
-    const tab = vscode.window.tabGroups.all
-      .flatMap((group) => group.tabs)
-      .find((candidate) => this.isOpenCodexSessionTab(candidate, sessionId));
-    if (!tab) {
-      return;
-    }
-
-    const viewColumn = tab.group.viewColumn;
-    if (await vscode.window.tabGroups.close(tab, true)) {
-      await this.openInEditorGroup(sessionId, viewColumn);
-    }
-  }
-
   /** Opens the official Codex new-conversation route in the first editor group. */
   public async createSession(): Promise<void> {
     const extension = vscode.extensions.getExtension('openai.chatgpt');
@@ -79,10 +61,6 @@ export class CodexSessionClient {
 
   /** Opens a conversation in the leftmost existing editor group, never Beside. */
   private async openInFirstEditorGroup(sessionId: string): Promise<void> {
-    await this.openInEditorGroup(sessionId, vscode.ViewColumn.One);
-  }
-
-  private async openInEditorGroup(sessionId: string, viewColumn: vscode.ViewColumn): Promise<void> {
     const extension = vscode.extensions.getExtension('openai.chatgpt');
     if (!extension) {
       throw new Error(vscode.l10n.t('OpenAI Codex (openai.chatgpt) is required.'));
@@ -94,36 +72,25 @@ export class CodexSessionClient {
       path: `/local/${sessionId}`
     });
     await vscode.commands.executeCommand('vscode.openWith', uri, 'chatgpt.conversationEditor', {
-      viewColumn,
+      viewColumn: vscode.ViewColumn.One,
       preview: false,
       preserveFocus: false
     });
   }
 
-  private isOpenCodexSessionTab(tab: vscode.Tab, sessionId: string): boolean {
-    if (!(tab.input instanceof vscode.TabInputCustom)) {
-      return false;
-    }
-    return tab.input.viewType === 'chatgpt.conversationEditor'
-      && tab.input.uri.scheme === 'openai-codex'
-      && tab.input.uri.authority === 'route'
-      && tab.input.uri.path === `/local/${sessionId}`;
-  }
-
-  public async renameSession(session: CodexSession): Promise<boolean> {
+  public async renameSession(session: CodexSession): Promise<void> {
     const title = await vscode.window.showInputBox({
       title: vscode.l10n.t('Rename Codex session'),
       value: session.title,
       validateInput: (value) => value.trim() ? undefined : vscode.l10n.t('Enter a session name.')
     });
     if (title === undefined || title.trim() === session.title) {
-      return false;
+      return;
     }
     await this.withCodexAppServer((request) => request('thread/name/set', {
       threadId: session.sessionId,
       name: title.trim()
     }));
-    return true;
   }
 
   public async archiveSession(session: CodexSession): Promise<void> {

@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented in this file.
 
+## 0.6.6 — 2026-10-25
+
+- Keep official Codex conversation editors open after a rename. This avoids
+  interrupting in-progress responses; the title is refreshed in Codex Ext's
+  session manager only.
+
 ## 0.6.5 — 2026-10-25
 
 - After a rename made in Codex Ext, reopen the matching official Codex editor
