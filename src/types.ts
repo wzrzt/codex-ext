@@ -2,6 +2,8 @@
 export interface CodexSession {
   readonly sessionId: string;
   readonly title: string;
+  /** Local last-activity timestamp when Codex exposes it. */
+  readonly updatedAt?: number;
   /** True when Codex stores the session under its local archived_sessions directory. */
   readonly archived?: boolean;
   /**

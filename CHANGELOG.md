@@ -2,6 +2,14 @@
 
 All notable changes to this project are documented in this file.
 
+## 0.6.7 — 2026-10-29
+
+- New official Codex editors are now tracked as temporary drafts: no local
+  thread is created until the first message is sent.
+- After that first message, Codex Ext detects the newly created thread,
+  refreshes the session manager, and automatically binds it to the workspace
+  that opened the draft.
+
 ## 0.6.6 — 2026-10-25
 
 - Keep official Codex conversation editors open after a rename. This avoids

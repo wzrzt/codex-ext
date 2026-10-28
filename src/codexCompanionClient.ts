@@ -249,7 +249,7 @@ export class CodexSessionClient {
     const databasePaths = [join(codexHome, 'state_5.sqlite'), join(codexHome, 'sqlite', 'state_5.sqlite')];
     const indexTitles = await this.readSessionIndexTitles(codexHome);
     const query = [
-      'SELECT id AS sessionId, title, name, cwd, archived',
+      'SELECT id AS sessionId, title, name, cwd, archived, recency_at_ms AS updatedAt',
       'FROM threads',
       "WHERE COALESCE(thread_source, 'user') = 'user'",
       'ORDER BY recency_at_ms DESC, id DESC;'
@@ -278,6 +278,7 @@ export class CodexSessionClient {
             title: typeof row.name === 'string' && row.name.trim()
               ? row.name
               : indexTitles.get(row.sessionId) ?? row.title,
+            updatedAt: parseEpochMilliseconds(row.updatedAt),
             archived: row.archived === 1,
             workspacePaths: typeof row.cwd === 'string' ? [row.cwd] : []
           }];
@@ -338,9 +339,10 @@ export class CodexSessionClient {
     const archivedIdSet = new Set(archivedIds);
     const indexed = [...latest.values()]
       .sort((left, right) => right.updatedAt - left.updatedAt)
-      .map(({ sessionId, title }) => ({
+      .map(({ sessionId, title, updatedAt }) => ({
         sessionId,
         title,
+        updatedAt,
         archived: archivedIdSet.has(sessionId),
         workspacePaths: workspacePathsBySession.get(sessionId)
       }));
@@ -433,6 +435,10 @@ function parseIndexLine(line: string): IndexedSession | undefined {
     // The last JSONL line can be incomplete while Codex is writing it.
     return undefined;
   }
+}
+
+function parseEpochMilliseconds(value: unknown): number | undefined {
+  return typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : undefined;
 }
 
 function parseSessionMetadata(contents: string): { sessionId: string; workspacePaths: readonly string[] } | undefined {

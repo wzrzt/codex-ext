@@ -63,6 +63,9 @@ The session list follows directly below it and retains groups, archive, and rest
    automatically, covering sessions whose metadata is unavailable.
 8. Use the search field to filter titles. Click a session to open it in a
    Codex editor tab.
+9. **New session** opens an official Codex draft. It does not create a local
+   conversation until you send the first message. After that, Codex Ext
+   detects the real session and binds it to the workspace automatically.
 
 The extension follows VS Code's display language. English is the default and
 Simplified Chinese is provided when VS Code uses `zh-cn`.
@@ -102,6 +105,8 @@ code --install-extension wzrzt.codex-ext
 - 显示官方 Codex 本地 app-server 返回的账户、套餐与可用额度。
 - 支持搜索、新建会话、新建分组、重命名、归档、恢复，以及拖拽到分组或
   Archived。
+- 点击“新建会话”只会打开官方 Codex 草稿页；未发送消息便关闭时不会产生
+  空白会话。首次发送消息后，扩展会自动识别真实会话并绑定到当前工作区。
 - 会话标题、工作区信息与归档状态只从本机 Codex 数据中读取；扩展不提供或
   使用远端数据服务。
 

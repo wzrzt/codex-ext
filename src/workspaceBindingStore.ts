@@ -28,6 +28,13 @@ export class WorkspaceBindingStore {
     return createHash('sha256').update(identity).digest('hex');
   }
 
+  /** Absolute folder paths captured when a new-session draft is opened. */
+  public getCurrentWorkspacePaths(): readonly string[] {
+    return (vscode.workspace.workspaceFolders ?? [])
+      .map((folder) => resolve(folder.uri.fsPath))
+      .sort();
+  }
+
   public isBoundToCurrentWorkspace(sessionId: string): boolean {
     const workspaceHash = this.getCurrentWorkspaceHash();
     return workspaceHash !== undefined && this.read()[sessionId] === workspaceHash;

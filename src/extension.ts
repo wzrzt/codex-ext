@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { CodexSessionClient } from './codexCompanionClient';
+import { DraftSessionTracker } from './draftSessionTracker';
 import { SessionManagerAction, SessionControlsWebviewProvider } from './sessionControlsWebviewProvider';
 import { WorkspaceBindingStore } from './workspaceBindingStore';
 
@@ -22,6 +23,22 @@ export function activate(context: vscode.ExtensionContext): void {
     if (sessionResult.status === 'fulfilled') { manager.setSessions(sessionResult.value); } else { manager.setError(sessionResult.reason); }
     if (usageResult.status === 'fulfilled') { manager.setUsage(usageResult.value); } else { manager.setUsageError(usageResult.reason); }
   };
+
+  const drafts = new DraftSessionTracker({
+    listSessions: () => sessions.listSessions(),
+    openDraft: () => sessions.createSession(),
+    currentWorkspaceHash: () => bindings.getCurrentWorkspaceHash(),
+    currentWorkspacePaths: () => bindings.getCurrentWorkspacePaths(),
+    onSessionConfirmed: (session, workspaceHash) => {
+      // A workspace can change while a blank official editor is open. Do not
+      // write a binding into a different workspace's state in that case.
+      if (bindings.getCurrentWorkspaceHash() !== workspaceHash) {
+        return Promise.resolve();
+      }
+      return bindings.bindToCurrentWorkspace(session.sessionId).then(() => undefined);
+    },
+    onSessionsChanged: (sessionList) => manager.setSessions(sessionList)
+  });
 
   const setShowAll = async (showAll: boolean): Promise<void> => {
     const target = vscode.workspace.workspaceFile || vscode.workspace.workspaceFolders ? vscode.ConfigurationTarget.Workspace : vscode.ConfigurationTarget.Global;
@@ -93,7 +110,7 @@ export function activate(context: vscode.ExtensionContext): void {
     switch (action.command) {
       case 'scope': return setShowAll(action.showAll);
       case 'search': manager.setQuery(action.query); return updateContexts();
-      case 'newSession': return sessions.createSession();
+      case 'newSession': return drafts.createDraft();
       case 'refresh': return refresh();
       case 'createGroup': return createGroup();
       case 'open': return openSession(action.sessionId);
@@ -122,6 +139,7 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider('codexWorkspaceSessions.controls', manager),
     manager.onDidRequestAction(runAction),
+    drafts,
     vscode.commands.registerCommand('codexWorkspaceSessions.focus', () => vscode.commands.executeCommand('codexWorkspaceSessions.controls.focus')),
     vscode.commands.registerCommand('codexWorkspaceSessions.toggleSessionScope', () => setShowAll(!getShowAll())),
     vscode.commands.registerCommand('codexWorkspaceSessions.showAllSessions', () => setShowAll(true)),
@@ -129,7 +147,7 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.commands.registerCommand('codexWorkspaceSessions.refreshSessions', refresh),
     vscode.commands.registerCommand('codexWorkspaceSessions.newSession', async () => {
       try {
-        await sessions.createSession();
+        await drafts.createDraft();
       } catch (error) {
         const detail = error instanceof Error ? error.message : String(error);
         void vscode.window.showErrorMessage(vscode.l10n.t('Codex Ext: {0}', detail));
