@@ -2,6 +2,11 @@
 
 All notable changes to this project are documented in this file.
 
+## 0.6.8 — 2026-10-30
+
+- Open new drafts through the official Codex command. This restores the
+  official conversation UI and avoids unsupported custom URI parameters.
+
 ## 0.6.7 — 2026-10-29
 
 - New official Codex editors are now tracked as temporary drafts: no local
