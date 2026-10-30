@@ -2,6 +2,11 @@
 
 All notable changes to this project are documented in this file.
 
+## 0.6.9 — 2026-10-30
+
+- Give each official Codex draft a unique URI fragment. New session now opens
+  a separate official draft tab instead of refocusing an existing one.
+
 ## 0.6.8 — 2026-10-30
 
 - Open new drafts through the official Codex command. This restores the

@@ -31,11 +31,22 @@ export class CodexSessionClient {
       throw new Error(vscode.l10n.t('OpenAI Codex (openai.chatgpt) is required.'));
     }
     await extension.activate();
-    // Use the official command rather than fabricating a custom-editor URI.
-    // The official editor currently treats query parameters on its /new route
-    // as unsupported, which can leave an empty tab with no working UI. It owns
-    // the draft lifecycle and creates the real thread only after first input.
-    await vscode.commands.executeCommand('chatgpt.newCodexPanel');
+    // The official command always opens the same `/new` URI, so VS Code focuses
+    // an existing draft instead of opening another one. The official Codex
+    // route parser intentionally ignores URI fragments; use one only as a
+    // per-draft identity. This keeps the official route untouched while letting
+    // VS Code create an independent custom-editor tab for each new draft.
+    const uri = vscode.Uri.from({
+      scheme: 'openai-codex',
+      authority: 'route',
+      path: '/extension/panel/new',
+      fragment: `codex-ext-draft-${randomUUID()}`
+    });
+    await vscode.commands.executeCommand('vscode.openWith', uri, 'chatgpt.conversationEditor', {
+      viewColumn: vscode.ViewColumn.Active,
+      preview: false,
+      preserveFocus: false
+    });
   }
 
   /** Reads the account allowance exposed by the official Codex app-server. */
@@ -522,3 +533,4 @@ function formatDuration(minutes: number): string {
   }
   return `${minutes}m`;
 }
+import { randomUUID } from 'node:crypto';
