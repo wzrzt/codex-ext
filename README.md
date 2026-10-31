@@ -74,6 +74,22 @@ Bindings are held in VS Code `workspaceState`; each workspace keeps an
 independent `sessionId → workspaceHash` mapping. Workspace identifiers are
 SHA-256 hashes rather than raw paths.
 
+## Release publishing
+
+Marketplace publishing is configured through GitHub Actions Trusted Publishing,
+so the repository does not store a long-lived Marketplace token. To publish a
+new release, first set the matching version in `package.json`, then push a tag
+using the same version:
+
+```bash
+git tag -a vX.Y.Z -m "Codex Ext X.Y.Z"
+git push origin vX.Y.Z
+```
+
+The `Publish VS Code extension` workflow packages and publishes the extension.
+It is safe to rerun: an already-published version is skipped rather than
+replaced.
+
 ## Privacy and data handling
 
 - Session titles, local workspace metadata, and archive state are read from
