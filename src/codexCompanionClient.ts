@@ -30,9 +30,9 @@ export class CodexSessionClient {
    * The official editor keeps a webview instance per URI, so closing just the
    * matching tab before reopening it clears a failed initial load.
    */
-  public async reloadSessionTab(resource?: vscode.Uri): Promise<void> {
-    const uri = resource ?? this.getActiveCodexConversationUri();
-    if (!uri || uri.scheme !== 'openai-codex' || !uri.path.startsWith('/local/')) {
+  public async reloadSessionTab(resource?: unknown): Promise<void> {
+    const uri = reviveUri(resource) ?? this.getActiveCodexConversationUri();
+    if (!uri || uri.scheme !== 'openai-codex') {
       throw new Error(vscode.l10n.t('Select an open Codex conversation tab to reload it.'));
     }
     const extension = vscode.extensions.getExtension('openai.chatgpt');
@@ -44,9 +44,7 @@ export class CodexSessionClient {
     let viewColumn = vscode.ViewColumn.Active;
     for (const group of vscode.window.tabGroups.all) {
       for (const tab of group.tabs) {
-        if (tab.input instanceof vscode.TabInputCustom
-          && tab.input.viewType === 'chatgpt.conversationEditor'
-          && tab.input.uri.toString() === uri.toString()) {
+        if (getTabInputUri(tab.input)?.toString() === uri.toString()) {
           matchingTabs.push(tab);
           viewColumn = group.viewColumn;
         }
@@ -122,9 +120,7 @@ export class CodexSessionClient {
 
   private getActiveCodexConversationUri(): vscode.Uri | undefined {
     const input = vscode.window.tabGroups.activeTabGroup.activeTab?.input;
-    return input instanceof vscode.TabInputCustom && input.viewType === 'chatgpt.conversationEditor'
-      ? input.uri
-      : undefined;
+    return input ? getTabInputUri(input) : undefined;
   }
 
   /*
@@ -559,6 +555,28 @@ function parseSessionMetadata(contents: string): { sessionId: string; workspaceP
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
+}
+
+/** Revive the plain URI object sent from a local UI to a Remote-SSH host. */
+function reviveUri(value: unknown): vscode.Uri | undefined {
+  if (value instanceof vscode.Uri) {
+    return value;
+  }
+  if (!isRecord(value) || typeof value.scheme !== 'string' || typeof value.path !== 'string') {
+    return undefined;
+  }
+  return vscode.Uri.from({
+    scheme: value.scheme,
+    authority: typeof value.authority === 'string' ? value.authority : '',
+    path: value.path,
+    query: typeof value.query === 'string' ? value.query : '',
+    fragment: typeof value.fragment === 'string' ? value.fragment : ''
+  });
+}
+
+function getTabInputUri(input: unknown): vscode.Uri | undefined {
+  const candidate = input as Record<string, unknown>;
+  return candidate.uri instanceof vscode.Uri ? candidate.uri : undefined;
 }
 
 function parseUsage(response: unknown, accountResponse: unknown): CodexUsage {

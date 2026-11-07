@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented in this file.
 
+## 0.6.17 — 2026-11-07
+
+- Fix **Reload Current Codex Tab** for failed official editors and Remote-SSH:
+  revive the URI passed across extension hosts and reload any `openai-codex`
+  route instead of accepting only the normal local-session route.
+
 ## 0.6.16 — 2026-11-03
 
 - Refresh the Marketplace and GitHub introduction to describe Remote-SSH
